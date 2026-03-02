@@ -1,0 +1,61 @@
+# ==================================================
+# Python cache
+# ==================================================
+__pycache__/
+*.py[cod]
+*.so
+
+# ==================================================
+# Virtual environments
+# ==================================================
+unsupervised_requirements/
+venv/
+env/
+.venv/
+bin/
+lib/
+lib64/
+include/
+share/
+pyvenv.cfg
+
+# ==================================================
+# Embedding cache (DO NOT PUSH)
+# ==================================================
+cache/
+*.npy
+
+# ==================================================
+# Large pretrained models (DO NOT PUSH)
+# ==================================================
+pretrained/
+*.bin
+*.vec
+*.txt
+*.model
+*.pt
+*.safetensors
+
+# ==================================================
+# Results
+# Keep only SecReq proof results
+# ==================================================
+results/*
+!results/secreq_supervised_full.csv
+!results/secreq_unsupervised_full.csv
+!results/analysis/
+!results/analysis/secreq/
+!results/analysis/secreq/*
+
+results/analysis/crowdre
+results/analysis/promise
+
+# ==================================================
+# OS / Editor
+# ==================================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+!requirements.txt
