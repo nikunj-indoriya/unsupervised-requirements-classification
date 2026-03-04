@@ -47,8 +47,17 @@ results/*
 !results/analysis/secreq/
 !results/analysis/secreq/*
 
-results/analysis/crowdre
-results/analysis/promise
+!results/crowdre_supervised_full.csv
+!results/crowdre_unsupervised_full.csv
+!results/analysis/
+!results/analysis/crowdre/
+!results/analysis/crowdre/*
+
+!results/promise_supervised_full.csv
+!results/promise_unsupervised_full.csv
+!results/analysis/
+!results/analysis/promise/
+!results/analysis/promise/*
 
 # ==================================================
 # OS / Editor
