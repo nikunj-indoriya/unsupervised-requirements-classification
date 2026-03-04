@@ -191,4 +191,3 @@ Results included in the repository are example outputs generated during experime
 This repository is part of an ongoing research project exploring embedding-based methods for software requirements classification.
 
 Further experiments and analysis are currently in progress.
-```
