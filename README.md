@@ -136,7 +136,6 @@ These analyses help understand the strengths and limitations of embedding-based 
 # Repository Structure
 
 ```
-
 data/                datasets used in experiments
 datasets/            dataset loaders
 embeddings/          embedding implementations
@@ -145,35 +144,26 @@ clustering/          clustering algorithms
 evaluation/          evaluation metrics
 experiments/         experiment logging
 results/             experiment outputs and analysis
-
 ```
-
 ---
-
 # Running Experiments
 
 Unsupervised experiments
 
 ```
-
 python run_full_unsupervised.py --dataset promise --path data/PROMISE_exp.arff
-
 ```
 
 Supervised baseline
 
 ```
-
 python run_logistic_exhaustive.py --dataset promise --path data/PROMISE_exp.arff
-
 ```
 
 Run full analysis
 
 ```
-
 python analysis_full.py --dataset promise
-
 ```
 
 ---
