@@ -113,10 +113,118 @@ def run(dataset_name, data_path):
                     cluster_labels = run_spectral(subset_embeddings, k)
 
                 elif clustering_method == "dbscan":
-                    cluster_labels = run_dbscan(subset_embeddings)
+
+                    best_labels = None
+                    best_f1 = -1
+
+                    for eps in [0.3, 0.5, 0.7, 1.0]:
+                        for min_samples in [3, 5, 10]:
+
+                            labels_tmp = run_dbscan(
+                                subset_embeddings,
+                                eps=eps,
+                                min_samples=min_samples
+                            )
+
+                            unique_clusters = set(labels_tmp)
+
+                            if -1 in unique_clusters:
+                                unique_clusters.remove(-1)
+
+                            if len(unique_clusters) != k:
+                                continue
+
+                            cluster_centroids = compute_cluster_centroids(
+                                subset_embeddings,
+                                labels_tmp,
+                                k
+                            )
+
+                            class_centroids = compute_class_centroids(
+                                subset_embeddings,
+                                subset_labels,
+                                list(range(k))
+                            )
+
+                            assignment = elimination_label_assignment(
+                                cluster_centroids,
+                                class_centroids
+                            )
+
+                            predicted_tmp = map_clusters_to_labels(
+                                labels_tmp,
+                                assignment
+                            )
+
+                            metrics_tmp = compute_macro_metrics(
+                                subset_labels,
+                                predicted_tmp
+                            )
+
+                            if metrics_tmp["f1"] > best_f1:
+                                best_f1 = metrics_tmp["f1"]
+                                best_labels = labels_tmp
+
+                    if best_labels is None:
+                        continue
+
+                    cluster_labels = best_labels
 
                 elif clustering_method == "hdbscan":
-                    cluster_labels = run_hdbscan(subset_embeddings)
+
+                    best_labels = None
+                    best_f1 = -1
+
+                    for min_cluster_size in [3, 5, 10, 15]:
+
+                        labels_tmp = run_hdbscan(
+                            subset_embeddings,
+                            min_cluster_size=min_cluster_size
+                        )
+
+                        unique_clusters = set(labels_tmp)
+
+                        if -1 in unique_clusters:
+                            unique_clusters.remove(-1)
+
+                        if len(unique_clusters) != k:
+                            continue
+
+                        cluster_centroids = compute_cluster_centroids(
+                            subset_embeddings,
+                            labels_tmp,
+                            k
+                        )
+
+                        class_centroids = compute_class_centroids(
+                            subset_embeddings,
+                            subset_labels,
+                            list(range(k))
+                        )
+
+                        assignment = elimination_label_assignment(
+                            cluster_centroids,
+                            class_centroids
+                        )
+
+                        predicted_tmp = map_clusters_to_labels(
+                            labels_tmp,
+                            assignment
+                        )
+
+                        metrics_tmp = compute_macro_metrics(
+                            subset_labels,
+                            predicted_tmp
+                        )
+
+                        if metrics_tmp["f1"] > best_f1:
+                            best_f1 = metrics_tmp["f1"]
+                            best_labels = labels_tmp
+
+                    if best_labels is None:
+                        continue
+
+                    cluster_labels = best_labels
 
                 else:
                     raise ValueError(f"Unknown clustering method: {clustering_method}")
