@@ -39,11 +39,6 @@ def run_spectral(embeddings, n_clusters):
     labels = model.fit_predict(embeddings)
     return labels
 
-
-# ============================================================
-# DBSCAN
-# ============================================================
-
 def run_dbscan(embeddings, eps=0.5, min_samples=5):
     model = DBSCAN(
         eps=eps,
@@ -52,11 +47,6 @@ def run_dbscan(embeddings, eps=0.5, min_samples=5):
     )
     labels = model.fit_predict(embeddings)
     return labels
-
-
-# ============================================================
-# HDBSCAN
-# ============================================================
 
 def run_hdbscan(embeddings, min_cluster_size=5):
 
@@ -72,11 +62,6 @@ def run_hdbscan(embeddings, min_cluster_size=5):
 
     labels = model.fit_predict(embeddings)
     return labels
-
-
-# ============================================================
-# Cluster Centroid Computation
-# ============================================================
 
 def compute_cluster_centroids(embeddings, cluster_labels, n_clusters):
 
