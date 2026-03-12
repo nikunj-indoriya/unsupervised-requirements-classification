@@ -21,6 +21,7 @@ def run_kmeans(embeddings, n_clusters):
     labels = model.fit_predict(embeddings)
     return labels
 
+
 def run_hac(embeddings, n_clusters):
     model = AgglomerativeClustering(
         n_clusters=n_clusters,

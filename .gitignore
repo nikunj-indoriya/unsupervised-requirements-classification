@@ -67,6 +67,4 @@ Thumbs.db
 .vscode/
 .idea/
 
-clean.py
-
 !requirements.txt
