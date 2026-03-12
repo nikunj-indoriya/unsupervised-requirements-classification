@@ -8,7 +8,7 @@ The framework supports multiple datasets, embedding models, clustering algorithm
 
 ---
 
-# Motivation
+## Motivation
 
 Software requirements classification is typically performed using supervised learning methods that require labeled datasets.
 
@@ -23,7 +23,7 @@ The experiments aim to answer the following questions:
 
 ---
 
-# Supported Datasets
+## Supported Datasets
 
 The framework currently supports multiple requirement datasets.
 
@@ -40,7 +40,7 @@ The system is designed to be **dataset-agnostic**, allowing new datasets to be e
 
 ---
 
-# Embedding Models
+## Embedding Models
 
 The framework evaluates nine embedding models.
 
@@ -63,9 +63,9 @@ These embeddings are used to convert requirement statements into vector represen
 
 ---
 
-# Methods
+## Methods
 
-## Unsupervised Classification
+### Unsupervised Classification
 
 Requirement embeddings are clustered using:
 
@@ -80,7 +80,7 @@ Macro F1 score.
 
 ---
 
-## Supervised Baseline
+### Supervised Baseline
 
 A supervised baseline is implemented using:
 
@@ -90,7 +90,7 @@ This provides an upper bound for comparison against unsupervised clustering.
 
 ---
 
-# Experimental Design
+## Experimental Design
 
 For each dataset the system performs:
 
@@ -112,7 +112,7 @@ The pipeline also supports **resume-safe experiment execution**, allowing long e
 
 ---
 
-# Analysis Pipeline
+## Analysis Pipeline
 
 The framework includes a full analysis module that produces:
 
@@ -133,10 +133,9 @@ These analyses help understand the strengths and limitations of embedding-based 
 
 ---
 
-# Repository Structure
+## Repository Structure
 
 ```
-
 data/                datasets used in experiments
 datasets/            dataset loaders
 embeddings/          embedding implementations
@@ -145,40 +144,31 @@ clustering/          clustering algorithms
 evaluation/          evaluation metrics
 experiments/         experiment logging
 results/             experiment outputs and analysis
-
 ```
-
 ---
-
-# Running Experiments
+## Running Experiments
 
 Unsupervised experiments
 
 ```
-
 python run_full_unsupervised.py --dataset promise --path data/PROMISE_exp.arff
-
 ```
 
 Supervised baseline
 
 ```
-
 python run_logistic_exhaustive.py --dataset promise --path data/PROMISE_exp.arff
-
 ```
 
 Run full analysis
 
 ```
-
 python analysis_full.py --dataset promise
-
 ```
 
 ---
 
-# Notes
+## Notes
 
 Pretrained embedding models are **not included in this repository** due to size constraints.
 
@@ -186,9 +176,8 @@ Results included in the repository are example outputs generated during experime
 
 ---
 
-# Research Status
+## Research Status
 
 This repository is part of an ongoing research project exploring embedding-based methods for software requirements classification.
 
 Further experiments and analysis are currently in progress.
-```
