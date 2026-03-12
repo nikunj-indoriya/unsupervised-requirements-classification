@@ -2,6 +2,8 @@ import argparse
 import numpy as np
 from tqdm import tqdm
 
+from sklearn.preprocessing import normalize
+
 from datasets.promise_dataset import PromiseDataset
 from datasets.crowdre_dataset import CrowdREDataset
 from datasets.secreq_dataset import SecReqDataset
@@ -27,6 +29,7 @@ from labeling.automated_centroid import (
 from evaluation.metrics import compute_macro_metrics
 from evaluation.experiment_logger import ExperimentLogger
 
+
 def load_dataset(dataset_name, path):
 
     if dataset_name == "promise":
@@ -40,6 +43,7 @@ def load_dataset(dataset_name, path):
 
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
+
 
 def run(dataset_name, data_path):
 
@@ -83,6 +87,8 @@ def run(dataset_name, data_path):
         print(f"\nProcessing embedding: {model_name}")
 
         embeddings = get_embedding(model_name, texts, dataset_name)
+
+        embeddings = normalize(embeddings)
 
         for combo in tqdm(combinations):
 
@@ -231,11 +237,9 @@ def run(dataset_name, data_path):
 
                 unique_clusters = set(cluster_labels)
 
-                # remove noise cluster if present
                 if -1 in unique_clusters:
                     unique_clusters.remove(-1)
 
-                # skip if cluster count != k
                 if len(unique_clusters) != k:
                     continue
 
@@ -281,6 +285,7 @@ def run(dataset_name, data_path):
     print("\nExperiment Finished")
     print("Total computed:", total_computed)
     print("Total skipped (resume):", total_skipped)
+
 
 if __name__ == "__main__":
 
