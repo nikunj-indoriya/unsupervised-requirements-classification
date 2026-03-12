@@ -8,23 +8,24 @@ from datasets.secreq_dataset import SecReqDataset
 
 from embeddings.load_all_embeddings import get_embedding
 from experiments.combination_generator import generate_all_combinations
+
 from clustering.clustering_engine import (
     run_kmeans,
     run_hac,
+    run_spectral,
+    run_dbscan,
+    run_hdbscan,
     compute_cluster_centroids
 )
+
 from labeling.automated_centroid import (
     compute_class_centroids,
     elimination_label_assignment,
     map_clusters_to_labels
 )
+
 from evaluation.metrics import compute_macro_metrics
 from evaluation.experiment_logger import ExperimentLogger
-
-
-# ============================================================
-# Dataset Loader
-# ============================================================
 
 def load_dataset(dataset_name, path):
 
@@ -39,11 +40,6 @@ def load_dataset(dataset_name, path):
 
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
-
-
-# ============================================================
-# Main Experiment
-# ============================================================
 
 def run(dataset_name, data_path):
 
@@ -68,7 +64,13 @@ def run(dataset_name, data_path):
         "instructor"
     ]
 
-    clustering_methods = ["kmeans", "hac"]
+    clustering_methods = [
+        "kmeans",
+        "hac",
+        "spectral",
+        "dbscan",
+        "hdbscan"
+    ]
 
     output_file = f"results/{dataset_name}_unsupervised_full.csv"
     logger = ExperimentLogger(output_file)
@@ -88,32 +90,57 @@ def run(dataset_name, data_path):
             combo = list(combo)
 
             mask = np.isin(labels, combo)
+
             subset_embeddings = embeddings[mask]
             subset_labels = labels[mask]
 
-            # Remap labels to 0..k-1
             label_map = {cls: i for i, cls in enumerate(combo)}
             subset_labels = np.array([label_map[l] for l in subset_labels])
 
             for clustering_method in clustering_methods:
 
-                # Resume check
                 if logger.is_completed(k, combo, model_name, clustering_method):
                     total_skipped += 1
                     continue
 
-                # Run clustering
                 if clustering_method == "kmeans":
                     cluster_labels = run_kmeans(subset_embeddings, k)
-                else:
+
+                elif clustering_method == "hac":
                     cluster_labels = run_hac(subset_embeddings, k)
 
+                elif clustering_method == "spectral":
+                    cluster_labels = run_spectral(subset_embeddings, k)
+
+                elif clustering_method == "dbscan":
+                    cluster_labels = run_dbscan(subset_embeddings)
+
+                elif clustering_method == "hdbscan":
+                    cluster_labels = run_hdbscan(subset_embeddings)
+
+                else:
+                    raise ValueError(f"Unknown clustering method: {clustering_method}")
+
+                unique_clusters = set(cluster_labels)
+
+                # remove noise cluster if present
+                if -1 in unique_clusters:
+                    unique_clusters.remove(-1)
+
+                # skip if cluster count != k
+                if len(unique_clusters) != k:
+                    continue
+
                 cluster_centroids = compute_cluster_centroids(
-                    subset_embeddings, cluster_labels, k
+                    subset_embeddings,
+                    cluster_labels,
+                    k
                 )
 
                 class_centroids = compute_class_centroids(
-                    subset_embeddings, subset_labels, list(range(k))
+                    subset_embeddings,
+                    subset_labels,
+                    list(range(k))
                 )
 
                 assignment = elimination_label_assignment(
@@ -121,11 +148,16 @@ def run(dataset_name, data_path):
                     class_centroids
                 )
 
-                predicted = map_clusters_to_labels(cluster_labels, assignment)
+                predicted = map_clusters_to_labels(
+                    cluster_labels,
+                    assignment
+                )
 
-                metrics = compute_macro_metrics(subset_labels, predicted)
+                metrics = compute_macro_metrics(
+                    subset_labels,
+                    predicted
+                )
 
-                # Log using new logger signature
                 logger.log(
                     k,
                     combo,
@@ -142,11 +174,6 @@ def run(dataset_name, data_path):
     print("Total computed:", total_computed)
     print("Total skipped (resume):", total_skipped)
 
-
-# ============================================================
-# Entry Point
-# ============================================================
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -158,9 +185,6 @@ if __name__ == "__main__":
     run(args.dataset, args.path)
 
 
-
-# For promise dataset,
+# Example runs
 # python run_full_unsupervised.py --dataset promise --path data/PROMISE_exp.arff
-
-# For CrowdRE dataset:
 # python run_full_unsupervised.py --dataset crowdre --path data/requirements.csv
